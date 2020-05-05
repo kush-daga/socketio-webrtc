@@ -1,5 +1,7 @@
 /** @format */
 const chatForm = document.getElementById("chat-form");
+const audioForm = document.getElementById("stream-audio");
+
 const socket = io();
 const chatMessages = document.querySelector(".chat-messages");
 const roomName = document.getElementById("room-name");
@@ -28,6 +30,13 @@ socket.on("message", (message) => {
 	//scroll down
 	chatMessages.scrollTop = chatMessages.scrollHeight;
 });
+socket.on("voice", function (arrayBuffer) {
+	console.log("Recieving audio");
+	var blob = new Blob([arrayBuffer], { type: "audio/ogg; codecs=opus" });
+	var audio = document.createElement("audio");
+	audio.src = window.URL.createObjectURL(blob);
+	audio.play();
+});
 
 //Message submit
 
@@ -41,6 +50,10 @@ chatForm.addEventListener("submit", (e) => {
 	//Clear inpout
 	e.target.elements.msg.value = "";
 	e.target.elements.msg.focus();
+});
+audioForm.addEventListener("submit", (e) => {
+	e.preventDefault();
+	sendAudio();
 });
 
 //Output message to dom
@@ -63,6 +76,31 @@ function outputRoomName(room) {
 
 function outputUsers(users) {
 	userList.innerHTML = `
-	${users.map((user) => `<li>${user.username}</li>`.join(""))}
+	${users.map((user) => `<li>${user.username}</li>`)}
 	`;
+}
+
+function sendAudio() {
+	var constraints = { audio: true };
+	navigator.mediaDevices.getUserMedia(constraints).then((mediaStream) => {
+		var mediaRecorder = new MediaRecorder(mediaStream);
+		mediaRecorder.onstart = function (e) {
+			this.chunks = [];
+		};
+		mediaRecorder.ondataavailable = function (e) {
+			this.chunks.push(e.data);
+		};
+		mediaRecorder.onstop = function (e) {
+			var blob = new Blob(this.chunks, { type: "audio/ogg; codecs=opus" });
+			socket.emit("radio", blob);
+		};
+		//Start recording
+		console.log("Starting recording");
+		mediaRecorder.start();
+
+		setInterval(function () {
+			mediaRecorder.stop();
+			mediaRecorder.start();
+		}, 5000);
+	});
 }

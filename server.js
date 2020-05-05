@@ -47,6 +47,13 @@ io.on("connection", (socket) => {
 			});
 		}
 	});
+
+	socket.on("radio", function (blob) {
+		const user = getCurrentUser(socket.id);
+		// can choose to broadcast it to whoever you want
+		console.log("Emmitting sound");
+		socket.broadcast.to(user.room).emit("voice", blob);
+	});
 });
 
 const PORT = 3000 || process.env.PORT;

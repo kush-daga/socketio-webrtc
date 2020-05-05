@@ -40,6 +40,11 @@
 					/>
 					<button class="btn"><i class="fas fa-paper-plane"></i> Send</button>
 				</form>
+				<form id="stream-audio">
+					<button class="btn" onClick="{sendAudio}">
+						<i class="fas fa-paper-plane"></i> Start Streaming
+					</button>
+				</form>
 			</div>
 		</div>
 		<script
@@ -47,7 +52,7 @@
 			integrity="sha256-lSPkSu/D04IeqWOhTgTf5tLzNFEc37oNE9ysGS9PdK4="
 			crossorigin="anonymous"
 		></script>
-		<script src="/socket.io/socket.io.js"></script>
+		<script src="socket.io/socket.io.js"></script>
 		<script src="js/main.js"></script>
 	</body>
 </html>
