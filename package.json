@@ -8,7 +8,7 @@
 		"dev": "nodemon server"
 	},
 	"dependencies": {
-		"express": "^4.17.1",
+		"express": "^4.18.2",
 		"moment": "^2.24.0",
 		"socket.io": "^2.3.0"
 	},
